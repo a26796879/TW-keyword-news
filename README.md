@@ -3,10 +3,10 @@
 
 目前來源有：
 
-get_google_news   ---- Google News
-get_udn_news      ---- UDN聯合新聞網
-get_setn_news     ---- 三立新聞網
-get_apple_news    ---- 蘋果日報
-get_ettoday_news  ---- 東森ETtoday
-get_TVBS_news     ---- TVBS
-get_china_news    ---- 中國時報
+Google News
+UDN聯合新聞網
+三立新聞網
+蘋果日報
+東森ETtoday
+TVBS
+中國時報
