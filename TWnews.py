@@ -1,3 +1,6 @@
+# !/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from gnews import GNews
 from newspaper import Article
 from datetime import datetime,timedelta
@@ -217,3 +220,38 @@ class news:
                         'url':url,
                         'publisher':'中時新聞網',
                         'published_date':published_date}
+    def get_storm_news(keyword):
+        url = 'https://www.storm.mg/site-search/result?q='+ keyword +'&order=none&format=week'
+        headers = {
+            'authority': 'www.storm.mg',
+            'method': 'GET',
+            'scheme': 'https',
+            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
+        }
+        res = requests.get(url=url,headers=headers)
+        soup = BeautifulSoup(res.text, 'html.parser')
+        titles = soup.select('p.card_title')
+        urls = soup.select('a.card_substance')
+        publish_dates = soup.select('span.info_time')
+        
+        for i in range(len(titles)):
+            title = titles[i].text
+            url = 'https://www.storm.mg' + urls[i].get('href')
+            publish_date = publish_dates[i].text
+            article = Article(url)
+            article.download()
+            article.parse()
+            dateFormatter = "%Y-%m-%d %H:%M"
+            published_date = datetime.strptime(publish_date, dateFormatter)
+            expect_time = datetime.today() - timedelta(hours=4)
+            if published_date >= expect_time:
+                if keyword in article.text:
+                    return  {
+                        'title':title,
+                        'url':url,
+                        'publisher':'風傳媒',
+                        'published_date':published_date}
+
+if __name__ == '__main__':
+    print(news.get_storm_news('test'))
