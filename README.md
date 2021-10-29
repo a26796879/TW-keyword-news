@@ -3,6 +3,16 @@
 
 目前來源有：
 
-Google News、UDN聯合新聞網、三立新聞網、蘋果日報、東森ETtoday、TVBS、中國時報
+Google News  
+UDN聯合新聞網  
+三立新聞網  
+蘋果日報  
+ETtoday  
+TVBS  
+中國時報  
+風傳媒  
+台視新聞網  
+民視新聞網  
+中央社CNA  
 
 預設時間為 4小時內的新聞，避免資料量過大
