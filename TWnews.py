@@ -12,22 +12,29 @@ class news:
     def __init__(self):
         pass
     def get_google_news(keyword):
-            google_news = GNews(language='zh-Hant', country='TW', period='4h')
-            news = google_news.get_news(keyword)
-            news_count = len(news)
-            # title,publisher,url,published date
-            for i in range(news_count):
-                article = Article(news[i]['url'])
-                article.download()
-                article.parse()
-                dateString = news[i]['published date']
-                dateFormatter = "%a, %d %b %Y %H:%M:%S GMT"
-                published_date = datetime.strptime(dateString, dateFormatter)
-                title = news[i]['title']
-                url = news[i]['url']
-                publisher = news[i]['publisher']['title']
-                if keyword in article.text:
-                    print(title,url,publisher,published_date)
+        google_news = GNews(language='zh-Hant', country='TW', period='4h')
+        news = google_news.get_news(keyword)
+        news_count = len(news)
+        # title,publisher,url,published date
+        results = []
+        for i in range(news_count):
+            article = Article(news[i]['url'])
+            article.download()
+            article.parse()
+            dateString = news[i]['published date']
+            dateFormatter = "%a, %d %b %Y %H:%M:%S GMT"
+            published_date = datetime.strptime(dateString, dateFormatter)
+            title = news[i]['title']
+            url = news[i]['url']
+            publisher = news[i]['publisher']['title']
+            if keyword in article.text:
+                results.append({
+                    'title':title,
+                    'url':url,
+                    'publisher':publisher,
+                    'published_date':published_date
+                })
+                return results
     def get_udn_news(keyword):
         headers = {
             'accept': '*/*',
@@ -44,6 +51,7 @@ class news:
         udn_url = 'https://udn.com/api/more?page=0&id=search:'+ keyword +'&channelId=2&type=searchword'
         res = requests.get(url=udn_url,headers=headers)
         news = res.json()['lists']
+        results = []
         for i in range(len(news)):
             article = Article(news[i]['titleLink'])
             article.download()
@@ -54,7 +62,14 @@ class news:
                 published_date = datetime.strptime(dateString, dateFormatter)
                 title = news[i]['title']
                 url = news[i]['titleLink']
-                print(title,url,'udn聯合新聞網',published_date)
+                publisher = 'udn聯合新聞網'
+                results.append({
+                    'title':title,
+                    'url':url,
+                    'publisher':publisher,
+                    'published_date':published_date
+                })
+                return results
     def get_apple_news(keyword):
         apple_url = 'https://tw.appledaily.com/pf/api/v3/content/fetch/search-query?query=%7B%22searchTerm%22%3A%22'+ keyword +'%22%2C%22start%22%3A-1%7D&d=262'
         headers = {
@@ -71,6 +86,7 @@ class news:
         }
         res = requests.get(url=apple_url,headers=headers)
         news = res.json()['content']
+        results = []
         for i in range(len(news)):
             article = Article(news[i]['sharing']['url'])
             article.download()
@@ -80,7 +96,13 @@ class news:
             title = news[i]['title']
             url = news[i]['sharing']['url']
             publisher = news[i]['brandName']
-            print(title,url,publisher,published_date)
+            results.append({
+                'title':title,
+                'url':url,
+                'publisher':publisher,
+                'published_date':published_date
+            })
+            return results
     def get_setn_news(keyword):
         url = 'https://www.setn.com/search.aspx?q='+ keyword +'&r=0'
         headers = {
@@ -97,6 +119,8 @@ class news:
         soup = BeautifulSoup(res.text, 'html.parser')
         titles = soup.select('div.newsimg-area-text-2')
         url_tag = soup.select("div.newsimg-area-info >  a.gt ")
+        results = []
+        publisher = '三立新聞網'
         for i in range(len(titles)):
             title = titles[i].text
             url = 'https://www.setn.com/' + url_tag[i].get('href').replace('&From=Search','')
@@ -109,7 +133,13 @@ class news:
             expect_time = datetime.today() - timedelta(hours=4)
             if published_date >= expect_time:
                 if keyword in article.text:
-                    print(title,url,'三立新聞網',published_date)
+                    results.append({
+                        'title':title,
+                        'url':url,
+                        'publisher':publisher,
+                        'published_date':published_date
+                    })
+                    return results
     def get_ettoday_news(keyword):
         url = 'https://www.ettoday.net/news_search/doSearch.php?search_term_string='+ keyword +''
         headers = {
@@ -127,6 +157,8 @@ class news:
         soup = BeautifulSoup(res.text, 'html.parser')
         titles = soup.select('h2 > a')
         date = soup.select('span.date')
+        publisher = 'ETtoday新聞雲'
+        results = []
         for i in range(len(titles)):
             title = titles[i].text
             url = titles[i].get('href')
@@ -139,7 +171,13 @@ class news:
             expect_time = datetime.today() - timedelta(hours=4)
             if published_date >= expect_time:
                 if keyword in article.text:
-                    print(title,url,'ETtoday新聞雲',published_date)
+                    results.append({
+                        'title':title,
+                        'url':url,
+                        'publisher':publisher,
+                        'published_date':published_date
+                    })
+                    return results
     def get_TVBS_news(keyword):
         url = 'https://news.tvbs.com.tw/news/searchresult/'+ keyword +'/news'
         headers = {
@@ -157,6 +195,8 @@ class news:
         titles = soup.select('h2.search_list_txt')
         urls = soup.select('span.search_list_box > a')
         dates = soup.select('span.publish_date')
+        publisher = 'TVBS新聞網'
+        results = []
         for i in range(len(titles)):
             title = titles[i].text
             url = urls[i].get('href')
@@ -169,7 +209,13 @@ class news:
             expect_time = datetime.today() - timedelta(hours=4)
             if published_date >= expect_time:
                 if keyword in article.text:
-                    print(title,url,'TVBS新聞網',published_date)
+                    results.append({
+                        'title':title,
+                        'url':url,
+                        'publisher':publisher,
+                        'published_date':published_date
+                    })
+                    return results
     def get_china_news(keyword):
         url = 'https://www.chinatimes.com/search/'+ keyword +'?chdtv'
         headers = {
@@ -184,6 +230,8 @@ class news:
         res = requests.get(url=url,headers=headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         titles = soup.select('h3 > a')
+        publisher = '中時新聞網'
+        results = []
         for i in range(len(titles)):
             title = titles[i].text
             url = titles[i].get('href')
@@ -196,7 +244,13 @@ class news:
             expect_time = datetime.today() - timedelta(hours=4)
             if published_date >= expect_time:
                 if keyword in article.text:
-                    print(title,url,'中時新聞網',published_date)
+                    results.append({
+                        'title':title,
+                        'url':url,
+                        'publisher':publisher,
+                        'published_date':published_date
+                    })
+                    return results
     def get_storm_news(keyword):
         url = 'https://www.storm.mg/site-search/result?q='+ keyword +'&order=none&format=week'
         headers = {
@@ -211,7 +265,8 @@ class news:
         titles = soup.select('p.card_title')
         urls = soup.select('a.card_substance')
         publish_dates = soup.select('span.info_time')
-        
+        publisher = '風傳媒'
+        results = []
         for i in range(len(titles)):
             title = titles[i].text
             url = 'https://www.storm.mg' + urls[i].get('href')
@@ -224,7 +279,13 @@ class news:
             expect_time = datetime.today() - timedelta(hours=4)
             if published_date >= expect_time:
                 if keyword in article.text:
-                    print(title,url,'風傳媒',published_date)
+                    results.append({
+                        'title':title,
+                        'url':url,
+                        'publisher':publisher,
+                        'published_date':published_date
+                    })
+                    return results
     def get_ttv_news(keyword):
         url = 'https://news.ttv.com.tw/search/' + keyword
         headers = {
@@ -240,7 +301,8 @@ class news:
         titles = soup.select('div.title')
         urls = soup.select('ul > li > a.clearfix')
         publishes = soup.select('div.time')
-
+        publisher = '台視新聞網'
+        results = []
         for i in range(len(urls)):
             url = 'https://news.ttv.com.tw/'+urls[i].get('href')
             title = titles[i+2].text
@@ -253,7 +315,13 @@ class news:
             expect_time = datetime.today() - timedelta(hours=4)
             if published_date >= expect_time:
                 if keyword in article.text:
-                    print(title,url,'台視新聞網',published_date)
+                    results.append({
+                        'title':title,
+                        'url':url,
+                        'publisher':publisher,
+                        'published_date':published_date
+                    })
+                    return results
     def get_ftv_news(keyword):
         url = 'https://www.ftvnews.com.tw/search/' + keyword
         headers = {
@@ -269,6 +337,8 @@ class news:
         titles = soup.select('div.title')
         urls = soup.select('ul > li > a.clearfix')
         publishes = soup.select('div.time')
+        publisher = '民視新聞網'
+        results = []
         for i in range(len(urls)):
             url = 'https://www.ftvnews.com.tw/'+urls[i].get('href')
             title = titles[i].text
@@ -281,7 +351,13 @@ class news:
             expect_time = datetime.today() - timedelta(hours=4)
             if published_date >= expect_time:
                 if keyword in article.text:
-                    print(title,url,'民視新聞網',published_date)
+                    results.append({
+                        'title':title,
+                        'url':url,
+                        'publisher':publisher,
+                        'published_date':published_date
+                    })
+                    return results
     def get_cna_news(keyword):
         url = 'https://www.cna.com.tw/search/hysearchws.aspx?q=' + keyword
         headers = {
@@ -297,6 +373,8 @@ class news:
         urls = soup.select('ul.mainList > li > a')
         titles = soup.select('div.listInfo > h2')
         dates = soup.select('div.date')
+        publisher = 'CNA中央社'
+        results = [] 
         for i in range(len(urls)):
             url = urls[i].get('href')
             title = titles[i].text
@@ -309,8 +387,23 @@ class news:
             expect_time = datetime.today() - timedelta(hours=4)
             if published_date >= expect_time:
                 if keyword in article.text:
-                    print(title,url,published_date)
+                    results.append({
+                        'title':title,
+                        'url':url,
+                        'publisher':publisher,
+                        'published_date':published_date
+                    })
+                    return results
 if __name__ == '__main__':
-    news.get_cna_news('基進')
+    print(news.get_udn_news('基進'))
+    print(news.get_apple_news('基進'))
+    print(news.get_setn_news('基進'))
+    print(news.get_ettoday_news('基進'))
+    print(news.get_TVBS_news('基進'))
+    print(news.get_china_news('基進'))
+    print(news.get_storm_news('基進'))
+    print(news.get_ttv_news('基進'))
+    print(news.get_ftv_news('基進'))
+    print(news.get_cna_news('基進'))
 
 
