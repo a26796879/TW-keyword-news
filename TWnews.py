@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from gnews import GNews
-from newspaper import Article
+from newspaper import Article,news_pool
+import newspaper
 from datetime import datetime,timedelta
 import requests, json
 from GoogleNews import GoogleNews
@@ -12,7 +13,7 @@ class news:
     def __init__(self):
         pass
     def get_google_news(keyword):
-        google_news = GNews(language='zh-Hant', country='TW', period='4h')
+        google_news = GNews(language='zh-Hant', country='TW', period="4h")
         news = google_news.get_news(keyword)
         news_count = len(news)
         # title,publisher,url,published date
@@ -34,7 +35,7 @@ class news:
                     'publisher':publisher,
                     'published_date':published_date
                 })
-                return results
+        return results
     def get_udn_news(keyword):
         headers = {
             'accept': '*/*',
@@ -69,7 +70,7 @@ class news:
                     'publisher':publisher,
                     'published_date':published_date
                 })
-                return results
+        return results
     def get_apple_news(keyword):
         apple_url = 'https://tw.appledaily.com/pf/api/v3/content/fetch/search-query?query=%7B%22searchTerm%22%3A%22'+ keyword +'%22%2C%22start%22%3A-1%7D&d=262'
         headers = {
@@ -102,7 +103,7 @@ class news:
                 'publisher':publisher,
                 'published_date':published_date
             })
-            return results
+        return results
     def get_setn_news(keyword):
         url = 'https://www.setn.com/search.aspx?q='+ keyword +'&r=0'
         headers = {
@@ -139,7 +140,7 @@ class news:
                         'publisher':publisher,
                         'published_date':published_date
                     })
-                    return results
+        return results
     def get_ettoday_news(keyword):
         url = 'https://www.ettoday.net/news_search/doSearch.php?search_term_string='+ keyword +''
         headers = {
@@ -177,7 +178,7 @@ class news:
                         'publisher':publisher,
                         'published_date':published_date
                     })
-                    return results
+        return results
     def get_TVBS_news(keyword):
         url = 'https://news.tvbs.com.tw/news/searchresult/'+ keyword +'/news'
         headers = {
@@ -215,7 +216,7 @@ class news:
                         'publisher':publisher,
                         'published_date':published_date
                     })
-                    return results
+        return results
     def get_china_news(keyword):
         url = 'https://www.chinatimes.com/search/'+ keyword +'?chdtv'
         headers = {
@@ -250,7 +251,7 @@ class news:
                         'publisher':publisher,
                         'published_date':published_date
                     })
-                    return results
+        return results
     def get_storm_news(keyword):
         url = 'https://www.storm.mg/site-search/result?q='+ keyword +'&order=none&format=week'
         headers = {
@@ -285,7 +286,7 @@ class news:
                         'publisher':publisher,
                         'published_date':published_date
                     })
-                    return results
+        return results
     def get_ttv_news(keyword):
         url = 'https://news.ttv.com.tw/search/' + keyword
         headers = {
@@ -321,7 +322,7 @@ class news:
                         'publisher':publisher,
                         'published_date':published_date
                     })
-                    return results
+        return results
     def get_ftv_news(keyword):
         url = 'https://www.ftvnews.com.tw/search/' + keyword
         headers = {
@@ -357,7 +358,7 @@ class news:
                         'publisher':publisher,
                         'published_date':published_date
                     })
-                    return results
+        return results
     def get_cna_news(keyword):
         url = 'https://www.cna.com.tw/search/hysearchws.aspx?q=' + keyword
         headers = {
@@ -393,17 +394,8 @@ class news:
                         'publisher':publisher,
                         'published_date':published_date
                     })
-                    return results
+        return results
 if __name__ == '__main__':
-    print(news.get_udn_news('基進'))
-    print(news.get_apple_news('基進'))
-    print(news.get_setn_news('基進'))
-    print(news.get_ettoday_news('基進'))
-    print(news.get_TVBS_news('基進'))
-    print(news.get_china_news('基進'))
-    print(news.get_storm_news('基進'))
-    print(news.get_ttv_news('基進'))
-    print(news.get_ftv_news('基進'))
     print(news.get_cna_news('基進'))
 
 
