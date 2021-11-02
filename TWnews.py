@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from gnews import GNews
-from newspaper import Article,news_pool
-import newspaper
+from newspaper import Article
 from datetime import datetime,timedelta
 import requests, json
 from GoogleNews import GoogleNews
