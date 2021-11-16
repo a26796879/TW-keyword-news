@@ -71,7 +71,7 @@ class news:
                 })
         return results
     def get_apple_news(keyword):
-        apple_url = 'https://tw.appledaily.com/pf/api/v3/content/fetch/search-query?query=%7B%22searchTerm%22%3A%22'+ keyword +'%22%2C%22start%22%3A-1%7D&d=262'
+        apple_url = 'https://tw.appledaily.com/pf/api/v3/content/fetch/search-query?query=%7B%22searchTerm%22%3A%22'+ keyword +'%22%2C%22start%22%3A0%7D&d=264&_website=tw-appledaily'
         headers = {
             'accept': '*/*',
             'accept-encoding': 'gzip, deflate, br',
@@ -395,6 +395,6 @@ class news:
                     })
         return results
 if __name__ == '__main__':
-    print(news.get_cna_news('基進'))
+    print(news.get_apple_news('基進'))
 
 
