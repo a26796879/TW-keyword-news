@@ -394,7 +394,46 @@ class news:
                         'published_date':published_date
                     })
         return results
+    def get_ltn_news(keyword):
+        url = 'https://search.ltn.com.tw/list?keyword=' + keyword
+        headers = {
+            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+            'accept-encoding': 'gzip, deflate, br',
+            'accept-language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
+            'sec-ch-ua': '"Chromium";v="94", "Google Chrome";v="94", ";Not A Brand";v="99"',
+            'sec-ch-ua-platform': '"Windows"',
+            'sec-fetch-dest': 'document',
+            'sec-fetch-mode': 'navigate',
+            'sec-fetch-site': 'same-origin',
+            'sec-fetch-user': '?1',
+            'upgrade-insecure-requests': '1',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
+        }
+        res = requests.get(url=url,headers=headers)
+        soup = BeautifulSoup(res.text, 'html.parser')
+        tit_tag = soup.find_all("a", class_="tit")
+        results = []
+        publisher = '自由時報電子報'
+        for i in range(len(tit_tag)):
+            title = tit_tag[i]['title']
+            url = tit_tag[i]['href']
+            article = Article(url)
+            article.download()
+            article.parse()
+            dateString = article.publish_date.strftime("%Y-%m-%d %H:%M:%S")
+            dateFormatter = "%Y-%m-%d %H:%M:%S"
+            published_date = datetime.strptime(dateString, dateFormatter)
+            expect_time = datetime.today() - timedelta(hours=1)
+            if published_date >= expect_time:
+                if keyword in article.text:
+                    results.append({
+                        'title':title,
+                        'url':url,
+                        'publisher':publisher,
+                        'published_date':published_date
+                    })
+        return results
 if __name__ == '__main__':
-    print(news.get_apple_news('基進'))
+    print(news.get_ltn_news('基進'))
 
 
