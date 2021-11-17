@@ -16,6 +16,25 @@ class User(BaseModel):
     email: Optional[str] = None
     full_name: Optional[str] = None
     disabled: Optional[bool] = None
+class UserLogin(BaseException):
+    username:str
+    password:str
+
+    class Config:
+        schema_extra = {
+            "example":{
+                "username":"test",
+                "password":"test"
+            }
+        }
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+class UserInDB(User):
+    hashed_password: str
+class TokenData(BaseModel):
+    username: Optional[str] = None
+
 users = []
 app = FastAPI()
 SECRET_KEY = "0f89f4495cd141c00a9e3148f19ce21a54090a8b205d3523577bd4b273fbecbc"
@@ -38,24 +57,6 @@ def root():
     jwt_encoded = jwt.encode({"some": "payload"}, SECRET_KEY, algorithm=ALGORITHM)
     return {"message": jwt_encoded}
 
-class UserLogin(BaseException):
-    username:str
-    password:str
-
-    class Config:
-        schema_extra = {
-            "example":{
-                "username":"test",
-                "password":"test"
-            }
-        }
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-class UserInDB(User):
-    hashed_password: str
-class TokenData(BaseModel):
-    username: Optional[str] = None
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
