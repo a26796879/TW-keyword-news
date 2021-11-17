@@ -119,26 +119,23 @@ class news:
         soup = BeautifulSoup(res.text, 'html.parser')
         titles = soup.select('div.newsimg-area-text-2')
         url_tag = soup.select("div.newsimg-area-info >  a.gt ")
+        dates = soup.select('div.newsimg-date')
         results = []
         publisher = '三立新聞網'
         for i in range(len(titles)):
             title = titles[i].text
+            dateString = dates[i].text
             url = 'https://www.setn.com/' + url_tag[i].get('href').replace('&From=Search','')
-            article = Article(url)
-            article.download()
-            article.parse()
-            dateString = article.publish_date.strftime("%Y-%m-%d %H:%M:%S")
-            dateFormatter = "%Y-%m-%d %H:%M:%S"
+            dateFormatter = "%Y/%m/%d %H:%M"
             published_date = datetime.strptime(dateString, dateFormatter)
             expect_time = datetime.today() - timedelta(hours=4)
             if published_date >= expect_time:
-                if keyword in article.text:
-                    results.append({
-                        'title':title,
-                        'url':url,
-                        'publisher':publisher,
-                        'published_date':published_date
-                    })
+                results.append({
+                    'title':title,
+                    'url':url,
+                    'publisher':publisher,
+                    'published_date':published_date
+                })
         return results
     def get_ettoday_news(keyword):
         url = 'https://www.ettoday.net/news_search/doSearch.php?search_term_string='+ keyword +''
@@ -230,26 +227,24 @@ class news:
         res = requests.get(url=url,headers=headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         titles = soup.select('h3 > a')
+        dates = soup.select('time')
         publisher = '中時新聞網'
         results = []
         for i in range(len(titles)):
             title = titles[i].text
             url = titles[i].get('href')
-            article = Article(url)
-            article.download()
-            article.parse()
-            dateString = article.publish_date.strftime("%Y-%m-%d %H:%M:%S+08:00")
-            dateFormatter = "%Y-%m-%d %H:%M:%S+08:00"
+            dateString = dates[i].get('datetime')
+            dateFormatter = "%Y-%m-%d %H:%M"
             published_date = datetime.strptime(dateString, dateFormatter)
+            print(title,published_date,url)
             expect_time = datetime.today() - timedelta(hours=4)
             if published_date >= expect_time:
-                if keyword in article.text:
-                    results.append({
-                        'title':title,
-                        'url':url,
-                        'publisher':publisher,
-                        'published_date':published_date
-                    })
+                results.append({
+                    'title':title,
+                    'url':url,
+                    'publisher':publisher,
+                    'published_date':published_date
+                })
         return results
     def get_storm_news(keyword):
         url = 'https://www.storm.mg/site-search/result?q='+ keyword +'&order=none&format=week'
@@ -434,6 +429,6 @@ class news:
                     })
         return results
 if __name__ == '__main__':
-    print(news.get_ltn_news('基進'))
+    print(news.get_setn_news('基進'))
 
 
