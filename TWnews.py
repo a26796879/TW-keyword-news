@@ -52,22 +52,18 @@ class news:
         news = res.json()['lists']
         results = []
         for i in range(len(news)):
-            article = Article(news[i]['titleLink'])
-            article.download()
-            article.parse()
-            if keyword in article.text:
-                dateString = news[i]['time']['date']
-                dateFormatter = "%Y-%m-%d %H:%M:%S"
-                published_date = datetime.strptime(dateString, dateFormatter)
-                title = news[i]['title']
-                url = news[i]['titleLink']
-                publisher = 'udn聯合新聞網'
-                results.append({
-                    'title':title,
-                    'url':url,
-                    'publisher':publisher,
-                    'published_date':published_date
-                })
+            dateString = news[i]['time']['date']
+            dateFormatter = "%Y-%m-%d %H:%M:%S"
+            published_date = datetime.strptime(dateString, dateFormatter)
+            title = news[i]['title']
+            url = news[i]['titleLink']
+            publisher = 'udn聯合新聞網'
+            results.append({
+                'title':title,
+                'url':url,
+                'publisher':publisher,
+                'published_date':published_date
+            })
         return results
     def get_apple_news(keyword):
         apple_url = 'https://tw.appledaily.com/pf/api/v3/content/fetch/search-query?query=%7B%22searchTerm%22%3A%22'+ keyword +'%22%2C%22start%22%3A0%7D&d=264&_website=tw-appledaily'
@@ -161,18 +157,14 @@ class news:
             publish = date[i].text.split('/')[1].replace(' ','')
             dateFormatter = "%Y-%m-%d%H:%M)"
             published_date = datetime.strptime(publish, dateFormatter)
-            article = Article(url)
-            article.download()
-            article.parse()
             expect_time = datetime.today() - timedelta(hours=4)
             if published_date >= expect_time:
-                if keyword in article.text:
-                    results.append({
-                        'title':title,
-                        'url':url,
-                        'publisher':publisher,
-                        'published_date':published_date
-                    })
+                results.append({
+                    'title':title,
+                    'url':url,
+                    'publisher':publisher,
+                    'published_date':published_date
+                })
         return results
     def get_TVBS_news(keyword):
         url = 'https://news.tvbs.com.tw/news/searchresult/'+ keyword +'/news'
@@ -199,18 +191,14 @@ class news:
             publish = dates[i].text
             dateFormatter = "%Y/%m/%d %H:%M"
             published_date = datetime.strptime(publish, dateFormatter)
-            article = Article(url)
-            article.download()
-            article.parse()
             expect_time = datetime.today() - timedelta(hours=4)
             if published_date >= expect_time:
-                if keyword in article.text:
-                    results.append({
-                        'title':title,
-                        'url':url,
-                        'publisher':publisher,
-                        'published_date':published_date
-                    })
+                results.append({
+                    'title':title,
+                    'url':url,
+                    'publisher':publisher,
+                    'published_date':published_date
+                })
         return results
     def get_china_news(keyword):
         url = 'https://www.chinatimes.com/search/'+ keyword +'?chdtv'
@@ -265,20 +253,16 @@ class news:
             title = titles[i].text
             url = 'https://www.storm.mg' + urls[i].get('href')
             publish_date = publish_dates[i].text
-            article = Article(url)
-            article.download()
-            article.parse()
             dateFormatter = "%Y-%m-%d %H:%M"
             published_date = datetime.strptime(publish_date, dateFormatter)
             expect_time = datetime.today() - timedelta(hours=4)
             if published_date >= expect_time:
-                if keyword in article.text:
-                    results.append({
-                        'title':title,
-                        'url':url,
-                        'publisher':publisher,
-                        'published_date':published_date
-                    })
+                results.append({
+                    'title':title,
+                    'url':url,
+                    'publisher':publisher,
+                    'published_date':published_date
+                })
         return results
     def get_ttv_news(keyword):
         url = 'https://news.ttv.com.tw/search/' + keyword
@@ -301,20 +285,16 @@ class news:
             url = 'https://news.ttv.com.tw/'+urls[i].get('href')
             title = titles[i+2].text
             publish = publishes[i].text
-            article = Article(url)
-            article.download()
-            article.parse()
             dateFormatter = "%Y/%m/%d %H:%M:%S"
             published_date = datetime.strptime(publish, dateFormatter)
             expect_time = datetime.today() - timedelta(hours=4)
             if published_date >= expect_time:
-                if keyword in article.text:
-                    results.append({
-                        'title':title,
-                        'url':url,
-                        'publisher':publisher,
-                        'published_date':published_date
-                    })
+                results.append({
+                    'title':title,
+                    'url':url,
+                    'publisher':publisher,
+                    'published_date':published_date
+                })
         return results
     def get_ftv_news(keyword):
         url = 'https://www.ftvnews.com.tw/search/' + keyword
@@ -337,20 +317,16 @@ class news:
             url = 'https://www.ftvnews.com.tw/'+urls[i].get('href')
             title = titles[i].text
             publish = publishes[i].text
-            article = Article(url)
-            article.download()
-            article.parse()
             dateFormatter = "%Y/%m/%d %H:%M:%S"
             published_date = datetime.strptime(publish, dateFormatter)
             expect_time = datetime.today() - timedelta(hours=4)
             if published_date >= expect_time:
-                if keyword in article.text:
-                    results.append({
-                        'title':title,
-                        'url':url,
-                        'publisher':publisher,
-                        'published_date':published_date
-                    })
+                results.append({
+                    'title':title,
+                    'url':url,
+                    'publisher':publisher,
+                    'published_date':published_date
+                })
         return results
     def get_cna_news(keyword):
         url = 'https://www.cna.com.tw/search/hysearchws.aspx?q=' + keyword
@@ -373,20 +349,16 @@ class news:
             url = urls[i].get('href')
             title = titles[i].text
             publish = dates[i].text
-            article = Article(url)
-            article.download()
-            article.parse()
             dateFormatter = "%Y/%m/%d %H:%M"
             published_date = datetime.strptime(publish, dateFormatter)
             expect_time = datetime.today() - timedelta(hours=4)
             if published_date >= expect_time:
-                if keyword in article.text:
-                    results.append({
-                        'title':title,
-                        'url':url,
-                        'publisher':publisher,
-                        'published_date':published_date
-                    })
+                results.append({
+                    'title':title,
+                    'url':url,
+                    'publisher':publisher,
+                    'published_date':published_date
+                })
         return results
     def get_ltn_news(keyword):
         url = 'https://search.ltn.com.tw/list?keyword=' + keyword
