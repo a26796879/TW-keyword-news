@@ -5,7 +5,6 @@ from gnews import GNews
 from newspaper import Article
 from datetime import datetime,timedelta
 import requests, json
-from GoogleNews import GoogleNews
 from bs4 import BeautifulSoup
 
 class news:
