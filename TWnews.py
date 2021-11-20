@@ -83,9 +83,6 @@ class news:
         news = res.json()['content']
         results = []
         for i in range(len(news)):
-            article = Article(news[i]['sharing']['url'])
-            article.download()
-            article.parse()
             dateString = news[i]['pubDate']
             published_date = (datetime.fromtimestamp(int(dateString)))
             title = news[i]['title']
@@ -400,6 +397,6 @@ class news:
                     })
         return results
 if __name__ == '__main__':
-    print(news.get_setn_news('基進'))
+    print(news.get_cna_news('基進'))
 
 
