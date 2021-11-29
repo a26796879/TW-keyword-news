@@ -12,7 +12,6 @@ class news:
         self.unit = 'hours'
         self.headers = {
             'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-            'accept-encoding': 'gzip, deflate, br',
             'accept-language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
             'sec-ch-ua': '"Chromium";v="94", "Google Chrome";v="94", ";Not A Brand";v="99"',
             'sec-ch-ua-platform': '"Windows"',
@@ -59,6 +58,7 @@ class news:
             title = news[i]['title']
             url = news[i]['titleLink']
             publisher = 'udn聯合新聞網'
+            image = news[i]['url']
             expect_time = datetime.today() - timedelta(hours=4)
             if published_date >= expect_time:
                 results.append({
@@ -81,6 +81,7 @@ class news:
             title = news[i]['title']
             url = news[i]['sharing']['url']
             publisher = news[i]['brandName']
+            image = news[i]['sharing']['image']
             expect_time = datetime.today() - timedelta(hours=4)
             if published_date >= expect_time:
                 results.append({
@@ -99,12 +100,14 @@ class news:
         titles = soup.select('div.newsimg-area-text-2')
         url_tag = soup.select("div.newsimg-area-info >  a.gt ")
         dates = soup.select('div.newsimg-date')
+        images = soup.select('img.lazy')
         results = []
         publisher = '三立新聞網'
         for i in range(len(titles)):
             title = titles[i].text
             dateString = dates[i].text
             url = 'https://www.setn.com/' + url_tag[i].get('href').replace('&From=Search','')
+            image = images[i].get('data-original').replace('-L','-PH')
             dateFormatter = "%Y/%m/%d %H:%M"
             published_date = datetime.strptime(dateString, dateFormatter)
             expect_time = datetime.today() - timedelta(hours=4)
@@ -119,17 +122,19 @@ class news:
                 break
         return results
     def get_ettoday_news(self,keyword):
-        url = 'https://www.ettoday.net/news_search/doSearch.php?search_term_string='+ keyword +''
+        url = 'https://www.ettoday.net/news_search/doSearch.php?search_term_string='+ keyword
         res = requests.get(url=url,headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         titles = soup.select('h2 > a')
         date = soup.select('span.date')
+        images = soup.select('img')
         publisher = 'ETtoday新聞雲'
         results = []
         for i in range(len(titles)):
             title = titles[i].text
             url = titles[i].get('href')
             publish = date[i].text.split('/')[1].replace(' ','')
+            image = 'https:' + images[i].get('src').replace('/b','/d')
             dateFormatter = "%Y-%m-%d%H:%M)"
             published_date = datetime.strptime(publish, dateFormatter)
             expect_time = datetime.today() - timedelta(hours=4)
@@ -150,12 +155,14 @@ class news:
         titles = soup.select('h2.search_list_txt')
         urls = soup.select('span.search_list_box > a')
         dates = soup.select('span.publish_date')
+        images = soup.select('img.lazyimage')
         publisher = 'TVBS新聞網'
         results = []
         for i in range(len(titles)):
             title = titles[i].text
             url = urls[i].get('href')
             publish = dates[i].text
+            image = images[i].get('data-original')
             dateFormatter = "%Y/%m/%d %H:%M"
             published_date = datetime.strptime(publish, dateFormatter)
             expect_time = datetime.today() - timedelta(hours=4)
@@ -176,10 +183,12 @@ class news:
         titles = soup.select('h3 > a')
         dates = soup.select('time')
         publisher = '中時新聞網'
+        images = soup.select('img.photo')
         results = []
         for i in range(len(titles)):
             title = titles[i].text
             url = titles[i].get('href')
+            image = images[i].get('src')
             dateString = dates[i].get('datetime')
             dateFormatter = "%Y-%m-%d %H:%M"
             published_date = datetime.strptime(dateString, dateFormatter)
@@ -202,11 +211,13 @@ class news:
         titles = soup.select('p.card_title')
         urls = soup.select('a.card_substance')
         publish_dates = soup.select('span.info_time')
+        images = soup.select('img.card_img')
         publisher = '風傳媒'
         results = []
         for i in range(len(titles)):
             title = titles[i].text
             url = 'https://www.storm.mg' + urls[i].get('href')
+            image = images[i].get('src').replace('150x150','800x533')
             publish_date = publish_dates[i].text
             dateFormatter = "%Y-%m-%d %H:%M"
             published_date = datetime.strptime(publish_date, dateFormatter)
@@ -228,12 +239,14 @@ class news:
         titles = soup.select('div.title')
         urls = soup.select('ul > li > a.clearfix')
         publishes = soup.select('div.time')
+        images = soup.select('img["alt=''"]')
         publisher = '台視新聞網'
         results = []
         for i in range(len(urls)):
             url = 'https://news.ttv.com.tw/'+urls[i].get('href')
             title = titles[i+2].text
             publish = publishes[i].text
+            image = images[i].get('src')
             dateFormatter = "%Y/%m/%d %H:%M:%S"
             published_date = datetime.strptime(publish, dateFormatter)
             expect_time = datetime.today() - timedelta(hours=4)
@@ -254,12 +267,14 @@ class news:
         titles = soup.select('div.title')
         urls = soup.select('ul > li > a.clearfix')
         publishes = soup.select('div.time')
+        images = soup.select('img["loading"]')
         publisher = '民視新聞網'
         results = []
         for i in range(len(urls)):
             url = 'https://www.ftvnews.com.tw/'+urls[i].get('href')
             title = titles[i].text
             publish = publishes[i].text
+            image = images[0].get('src')
             dateFormatter = "%Y/%m/%d %H:%M:%S"
             published_date = datetime.strptime(publish, dateFormatter)
             expect_time = datetime.today() - timedelta(hours=4)
@@ -286,6 +301,11 @@ class news:
             url = urls[i].get('href')
             title = titles[i].text
             publish = dates[i].text
+            image_url = urls[i].img
+            if image_url != None:
+                image = image_url['data-src'].replace('/200/','/400/')
+            else:
+                image = None
             dateFormatter = "%Y/%m/%d %H:%M"
             published_date = datetime.strptime(publish, dateFormatter)
             expect_time = datetime.today() - timedelta(hours=4)
@@ -304,6 +324,7 @@ class news:
         res = requests.get(url=url,headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         tit_tag = soup.find_all("a", class_="tit")
+        images = soup.select('img.lazy_imgs')
         results = []
         publisher = '自由時報電子報'
         for i in range(len(tit_tag)):
@@ -312,6 +333,7 @@ class news:
             res = requests.get(url=url,headers=self.headers)
             soup = BeautifulSoup(res.text, 'html.parser')
             publish = soup.select('span.time')[0].text.replace('\n    ','')
+            image = images[i].get('data-src')
             dateFormatter = "%Y/%m/%d %H:%M"
             published_date = datetime.strptime(publish, dateFormatter)
             expect_time = datetime.today() - timedelta(hours=4)
