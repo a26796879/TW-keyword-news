@@ -9,8 +9,20 @@ from bs4 import BeautifulSoup
 
 class news:
     def __init__(self):
-        pass
-    def get_google_news(keyword):
+        self.headers = {
+            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+            'accept-encoding': 'gzip, deflate, br',
+            'accept-language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
+            'sec-ch-ua': '"Chromium";v="94", "Google Chrome";v="94", ";Not A Brand";v="99"',
+            'sec-ch-ua-platform': '"Windows"',
+            'sec-fetch-dest': 'document',
+            'sec-fetch-mode': 'navigate',
+            'sec-fetch-site': 'same-origin',
+            'sec-fetch-user': '?1',
+            'upgrade-insecure-requests': '1',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
+        }
+    def get_google_news(self,keyword):
         google_news = GNews(language='zh-Hant', country='TW', period="4h")
         news = google_news.get_news(keyword)
         news_count = len(news)
@@ -34,21 +46,9 @@ class news:
                     'published_date':published_date
                 })
         return results
-    def get_udn_news(keyword):
-        headers = {
-            'accept': '*/*',
-            'accept-encoding': 'gzip, deflate, br',
-            'accept-language': 'zh-TW,zh;q=0.9',
-            'if-none-match': 'W/"989a-QvaRHTovk4mLrItkm2o2tDX3w/4"',
-            'sec-ch-ua': '"Chromium";v="92", " Not A;Brand";v="99", "Google Chrome";v="92"',
-            'sec-ch-ua-mobile': '?0',
-            'sec-fetch-dest': 'empty',
-            'sec-fetch-mode': 'cors',
-            'sec-fetch-site': 'same-origin',
-            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36'
-        }
+    def get_udn_news(self,keyword):
         udn_url = 'https://udn.com/api/more?page=0&id=search:'+ keyword +'&channelId=2&type=searchword'
-        res = requests.get(url=udn_url,headers=headers)
+        res = requests.get(url=udn_url,headers=self.headers)
         news = res.json()['lists']
         results = []
         for i in range(len(news)):
@@ -69,21 +69,9 @@ class news:
             else:
                 break
         return results
-    def get_apple_news(keyword):
+    def get_apple_news(self,keyword):
         apple_url = 'https://tw.appledaily.com/pf/api/v3/content/fetch/search-query?query=%7B%22searchTerm%22%3A%22'+ keyword +'%22%2C%22start%22%3A0%7D&d=264&_website=tw-appledaily'
-        headers = {
-            'accept': '*/*',
-            'accept-encoding': 'gzip, deflate, br',
-            'accept-language': 'zh-TW,zh;q=0.9',
-            'if-none-match': 'W/"989a-QvaRHTovk4mLrItkm2o2tDX3w/4"',
-            'sec-ch-ua': '"Chromium";v="92", " Not A;Brand";v="99", "Google Chrome";v="92"',
-            'sec-ch-ua-mobile': '?0',
-            'sec-fetch-dest': 'empty',
-            'sec-fetch-mode': 'cors',
-            'sec-fetch-site': 'same-origin',
-            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36'
-        }
-        res = requests.get(url=apple_url,headers=headers)
+        res = requests.get(url=apple_url,headers=self.headers)
         news = res.json()['content']
         results = []
         for i in range(len(news)):
@@ -103,19 +91,9 @@ class news:
             else:
                 break
         return results
-    def get_setn_news(keyword):
+    def get_setn_news(self,keyword):
         url = 'https://www.setn.com/search.aspx?q='+ keyword +'&r=0'
-        headers = {
-            'authority': 'www.setn.com',
-            'method': 'GET',
-            'scheme': 'https',
-            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-            'accept-encoding': 'gzip, deflate, br',
-            'accept-language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
-            'sec-ch-ua': '"Chromium";v="94", "Google Chrome";v="94", ";Not A Brand";v="99"',
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
-        }
-        res = requests.get(url=url,headers=headers)
+        res = requests.get(url=url,headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         titles = soup.select('div.newsimg-area-text-2')
         url_tag = soup.select("div.newsimg-area-info >  a.gt ")
@@ -139,20 +117,9 @@ class news:
             else:
                 break
         return results
-    def get_ettoday_news(keyword):
+    def get_ettoday_news(self,keyword):
         url = 'https://www.ettoday.net/news_search/doSearch.php?search_term_string='+ keyword +''
-        headers = {
-        'authority': 'www.ettoday.net',
-        'method': 'GET',
-        'scheme': 'https',
-        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-        'accept-encoding': 'gzip, deflate, br',
-        'accept-language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
-        'referer': 'https://www.ettoday.net/news_search/doSearch.php?keywords=',
-        'sec-ch-ua': '"Chromium";v="94", "Google Chrome";v="94", ";Not A Brand";v="99"',
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
-        }
-        res = requests.get(url=url,headers=headers)
+        res = requests.get(url=url,headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         titles = soup.select('h2 > a')
         date = soup.select('span.date')
@@ -175,19 +142,9 @@ class news:
             else:
                 break
         return results
-    def get_TVBS_news(keyword):
+    def get_TVBS_news(self,keyword):
         url = 'https://news.tvbs.com.tw/news/searchresult/'+ keyword +'/news'
-        headers = {
-            'authority': 'news.tvbs.com.tw',
-            'method': 'GET',
-            'scheme': 'https',
-            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-            'accept-encoding': 'gzip, deflate, br',
-            'accept-language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
-            'sec-ch-ua': '"Chromium";v="94", "Google Chrome";v="94", ";Not A Brand";v="99"',
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
-        }
-        res = requests.get(url=url,headers=headers)
+        res = requests.get(url=url,headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         titles = soup.select('h2.search_list_txt')
         urls = soup.select('span.search_list_box > a')
@@ -211,18 +168,9 @@ class news:
             else:
                 break
         return results
-    def get_china_news(keyword):
+    def get_china_news(self,keyword):
         url = 'https://www.chinatimes.com/search/'+ keyword +'?chdtv'
-        headers = {
-            'authority': 'www.chinatimes.com',
-            'method': 'GET',
-            'scheme': 'https',
-            'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-            'accept-language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
-            'sec-ch-ua': '"Chromium";v="94", "Google Chrome";v="94", ";Not A Brand";v="99"',
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
-        }
-        res = requests.get(url=url,headers=headers)
+        res = requests.get(url=url,headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         titles = soup.select('h3 > a')
         dates = soup.select('time')
@@ -246,16 +194,9 @@ class news:
             else:
                 break
         return results
-    def get_storm_news(keyword):
+    def get_storm_news(self,keyword):
         url = 'https://www.storm.mg/site-search/result?q='+ keyword +'&order=none&format=week'
-        headers = {
-            'authority': 'www.storm.mg',
-            'method': 'GET',
-            'scheme': 'https',
-            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
-        }
-        res = requests.get(url=url,headers=headers)
+        res = requests.get(url=url,headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         titles = soup.select('p.card_title')
         urls = soup.select('a.card_substance')
@@ -279,17 +220,9 @@ class news:
             else:
                 break
         return results
-    def get_ttv_news(keyword):
+    def get_ttv_news(self,keyword):
         url = 'https://news.ttv.com.tw/search/' + keyword
-        headers = {
-            'method': 'GET',
-            'scheme': 'https',
-            'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-            'accept-language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
-            'sec-ch-ua': '"Chromium";v="94", "Google Chrome";v="94", ";Not A Brand";v="99"',
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
-        }
-        res = requests.get(url=url,headers=headers)
+        res = requests.get(url=url,headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         titles = soup.select('div.title')
         urls = soup.select('ul > li > a.clearfix')
@@ -313,17 +246,9 @@ class news:
             else:
                 break
         return results
-    def get_ftv_news(keyword):
+    def get_ftv_news(self,keyword):
         url = 'https://www.ftvnews.com.tw/search/' + keyword
-        headers = {
-            'method': 'GET',
-            'scheme': 'https',
-            'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-            'accept-language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
-            'sec-ch-ua': '"Chromium";v="94", "Google Chrome";v="94", ";Not A Brand";v="99"',
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
-        }
-        res = requests.get(url=url,headers=headers)
+        res = requests.get(url=url,headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         titles = soup.select('div.title')
         urls = soup.select('ul > li > a.clearfix')
@@ -347,17 +272,9 @@ class news:
             else:
                 break
         return results
-    def get_cna_news(keyword):
+    def get_cna_news(self,keyword):
         url = 'https://www.cna.com.tw/search/hysearchws.aspx?q=' + keyword
-        headers = {
-            'method': 'GET',
-            'scheme': 'https',
-            'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-            'accept-language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
-            'sec-ch-ua': '"Chromium";v="94", "Google Chrome";v="94", ";Not A Brand";v="99"',
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
-        }
-        res = requests.get(url=url,headers=headers)
+        res = requests.get(url=url,headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         urls = soup.select('ul.mainList > li > a')
         titles = soup.select('div.listInfo > h2')
@@ -381,22 +298,9 @@ class news:
             else:
                 break
         return results
-    def get_ltn_news(keyword):
+    def get_ltn_news(self,keyword):
         url = 'https://search.ltn.com.tw/list?keyword=' + keyword
-        headers = {
-            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-            'accept-encoding': 'gzip, deflate, br',
-            'accept-language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
-            'sec-ch-ua': '"Chromium";v="94", "Google Chrome";v="94", ";Not A Brand";v="99"',
-            'sec-ch-ua-platform': '"Windows"',
-            'sec-fetch-dest': 'document',
-            'sec-fetch-mode': 'navigate',
-            'sec-fetch-site': 'same-origin',
-            'sec-fetch-user': '?1',
-            'upgrade-insecure-requests': '1',
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
-        }
-        res = requests.get(url=url,headers=headers)
+        res = requests.get(url=url,headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         tit_tag = soup.find_all("a", class_="tit")
         results = []
@@ -404,12 +308,12 @@ class news:
         for i in range(len(tit_tag)):
             title = tit_tag[i]['title']
             url = tit_tag[i]['href']
-            res = requests.get(url=url,headers=headers)
+            res = requests.get(url=url,headers=self.headers)
             soup = BeautifulSoup(res.text, 'html.parser')
             publish = soup.select('span.time')[0].text.replace('\n    ','')
             dateFormatter = "%Y/%m/%d %H:%M"
             published_date = datetime.strptime(publish, dateFormatter)
-            expect_time = datetime.today() - timedelta(hours=10)
+            expect_time = datetime.today() - timedelta(hours=4)
             if published_date >= expect_time:
                 results.append({
                     'title':title,
@@ -421,6 +325,4 @@ class news:
                 break
         return results
 if __name__ == '__main__':
-    print(news.get_apple_news('基進'))
-
-
+    print(news().get_udn_news('基進'))
