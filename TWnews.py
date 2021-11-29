@@ -58,12 +58,16 @@ class news:
             title = news[i]['title']
             url = news[i]['titleLink']
             publisher = 'udn聯合新聞網'
-            results.append({
-                'title':title,
-                'url':url,
-                'publisher':publisher,
-                'published_date':published_date
-            })
+            expect_time = datetime.today() - timedelta(hours=4)
+            if published_date >= expect_time:
+                results.append({
+                    'title':title,
+                    'url':url,
+                    'publisher':publisher,
+                    'published_date':published_date
+                })
+            else:
+                break
         return results
     def get_apple_news(keyword):
         apple_url = 'https://tw.appledaily.com/pf/api/v3/content/fetch/search-query?query=%7B%22searchTerm%22%3A%22'+ keyword +'%22%2C%22start%22%3A0%7D&d=264&_website=tw-appledaily'
@@ -88,12 +92,16 @@ class news:
             title = news[i]['title']
             url = news[i]['sharing']['url']
             publisher = news[i]['brandName']
-            results.append({
-                'title':title,
-                'url':url,
-                'publisher':publisher,
-                'published_date':published_date
-            })
+            expect_time = datetime.today() - timedelta(hours=4)
+            if published_date >= expect_time:
+                results.append({
+                    'title':title,
+                    'url':url,
+                    'publisher':publisher,
+                    'published_date':published_date
+                })
+            else:
+                break
         return results
     def get_setn_news(keyword):
         url = 'https://www.setn.com/search.aspx?q='+ keyword +'&r=0'
@@ -128,6 +136,8 @@ class news:
                     'publisher':publisher,
                     'published_date':published_date
                 })
+            else:
+                break
         return results
     def get_ettoday_news(keyword):
         url = 'https://www.ettoday.net/news_search/doSearch.php?search_term_string='+ keyword +''
@@ -162,6 +172,8 @@ class news:
                     'publisher':publisher,
                     'published_date':published_date
                 })
+            else:
+                break
         return results
     def get_TVBS_news(keyword):
         url = 'https://news.tvbs.com.tw/news/searchresult/'+ keyword +'/news'
@@ -196,6 +208,8 @@ class news:
                     'publisher':publisher,
                     'published_date':published_date
                 })
+            else:
+                break
         return results
     def get_china_news(keyword):
         url = 'https://www.chinatimes.com/search/'+ keyword +'?chdtv'
@@ -229,6 +243,8 @@ class news:
                     'publisher':publisher,
                     'published_date':published_date
                 })
+            else:
+                break
         return results
     def get_storm_news(keyword):
         url = 'https://www.storm.mg/site-search/result?q='+ keyword +'&order=none&format=week'
@@ -260,6 +276,8 @@ class news:
                     'publisher':publisher,
                     'published_date':published_date
                 })
+            else:
+                break
         return results
     def get_ttv_news(keyword):
         url = 'https://news.ttv.com.tw/search/' + keyword
@@ -292,6 +310,8 @@ class news:
                     'publisher':publisher,
                     'published_date':published_date
                 })
+            else:
+                break
         return results
     def get_ftv_news(keyword):
         url = 'https://www.ftvnews.com.tw/search/' + keyword
@@ -324,6 +344,8 @@ class news:
                     'publisher':publisher,
                     'published_date':published_date
                 })
+            else:
+                break
         return results
     def get_cna_news(keyword):
         url = 'https://www.cna.com.tw/search/hysearchws.aspx?q=' + keyword
@@ -356,6 +378,8 @@ class news:
                     'publisher':publisher,
                     'published_date':published_date
                 })
+            else:
+                break
         return results
     def get_ltn_news(keyword):
         url = 'https://search.ltn.com.tw/list?keyword=' + keyword
@@ -380,23 +404,23 @@ class news:
         for i in range(len(tit_tag)):
             title = tit_tag[i]['title']
             url = tit_tag[i]['href']
-            article = Article(url)
-            article.download()
-            article.parse()
-            dateString = article.publish_date.strftime("%Y-%m-%d %H:%M:%S")
-            dateFormatter = "%Y-%m-%d %H:%M:%S"
-            published_date = datetime.strptime(dateString, dateFormatter)
-            expect_time = datetime.today() - timedelta(hours=1)
+            res = requests.get(url=url,headers=headers)
+            soup = BeautifulSoup(res.text, 'html.parser')
+            publish = soup.select('span.time')[0].text.replace('\n    ','')
+            dateFormatter = "%Y/%m/%d %H:%M"
+            published_date = datetime.strptime(publish, dateFormatter)
+            expect_time = datetime.today() - timedelta(hours=10)
             if published_date >= expect_time:
-                if keyword in article.text:
-                    results.append({
-                        'title':title,
-                        'url':url,
-                        'publisher':publisher,
-                        'published_date':published_date
-                    })
+                results.append({
+                    'title':title,
+                    'url':url,
+                    'publisher':publisher,
+                    'published_date':published_date
+                })
+            else:
+                break
         return results
 if __name__ == '__main__':
-    print(news.get_cna_news('基進'))
+    print(news.get_apple_news('基進'))
 
 
