@@ -239,7 +239,7 @@ class news:
         titles = soup.select('div.title')
         urls = soup.select('ul > li > a.clearfix')
         publishes = soup.select('div.time')
-        images = soup.select('img["alt=''"]')
+        images = soup.select('img[alt=""]')
         publisher = '台視新聞網'
         results = []
         for i in range(len(urls)):
@@ -267,14 +267,14 @@ class news:
         titles = soup.select('div.title')
         urls = soup.select('ul > li > a.clearfix')
         publishes = soup.select('div.time')
-        images = soup.select('img["loading"]')
+        images = soup.select('img[loading]')
         publisher = '民視新聞網'
         results = []
         for i in range(len(urls)):
             url = 'https://www.ftvnews.com.tw/'+urls[i].get('href')
             title = titles[i].text
             publish = publishes[i].text
-            image = images[0].get('src')
+            image = images[i].get('src')
             dateFormatter = "%Y/%m/%d %H:%M:%S"
             published_date = datetime.strptime(publish, dateFormatter)
             expect_time = datetime.today() - timedelta(hours=4)
@@ -332,7 +332,7 @@ class news:
             url = tit_tag[i]['href']
             res = requests.get(url=url,headers=self.headers)
             soup = BeautifulSoup(res.text, 'html.parser')
-            publish = soup.select('span.time')[0].text.replace('\n    ','')
+            publish = soup.select('span.time')[i].text.replace('\n    ','')
             image = images[i].get('data-src')
             dateFormatter = "%Y/%m/%d %H:%M"
             published_date = datetime.strptime(publish, dateFormatter)
@@ -348,4 +348,4 @@ class news:
                 break
         return results
 if __name__ == '__main__':
-    print(news().get_apple_news('基進'))
+    print(news().get_ttv_news('基進'))
