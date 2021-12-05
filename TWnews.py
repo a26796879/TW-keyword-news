@@ -1,12 +1,11 @@
 # !/usr/bin/python
 # -*- coding: utf-8 -*-
-
 from gnews import GNews
 from newspaper import Article
 from datetime import datetime,timedelta
-import requests, json
+import requests, json, asyncio, time, urllib
 from bs4 import BeautifulSoup
-
+from requests_html import AsyncHTMLSession
 class news:
     def __init__(self):
         self.unit = 'hours'
@@ -46,8 +45,8 @@ class news:
                     'published_date':published_date
                 })
         return results
-    def get_udn_news(self,keyword):
-        udn_url = 'https://udn.com/api/more?page=0&id=search:'+ keyword +'&channelId=2&type=searchword'
+    async def get_udn_news(self,s,keyword):
+        udn_url = 'https://udn.com/api/more?page=0&id=search:'+ urllib.parse.quote_plus(keyword) +'&channelId=2&type=searchword'
         res = requests.get(url=udn_url,headers=self.headers)
         news = res.json()['lists']
         results = []
@@ -70,8 +69,8 @@ class news:
             else:
                 break
         return results
-    def get_apple_news(self,keyword):
-        apple_url = 'https://tw.appledaily.com/pf/api/v3/content/fetch/search-query?query=%7B%22searchTerm%22%3A%22'+ keyword +'%22%2C%22start%22%3A0%7D&_website=tw-appledaily'
+    async def get_apple_news(self,s,keyword):
+        apple_url = 'https://tw.appledaily.com/pf/api/v3/content/fetch/search-query?query=%7B%22searchTerm%22%3A%22'+ urllib.parse.quote_plus(keyword) +'%22%2C%22start%22%3A0%7D&_website=tw-appledaily'
         res = requests.get(url=apple_url,headers=self.headers)
         news = res.json()['content']
         results = []
@@ -93,8 +92,8 @@ class news:
             else:
                 break
         return results
-    def get_setn_news(self,keyword):
-        url = 'https://www.setn.com/search.aspx?q='+ keyword +'&r=0'
+    async def get_setn_news(self,s,keyword):
+        url = 'https://www.setn.com/search.aspx?q='+ urllib.parse.quote_plus(keyword) +'&r=0'
         res = requests.get(url=url,headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         titles = soup.select('div.newsimg-area-text-2')
@@ -121,8 +120,8 @@ class news:
             else:
                 break
         return results
-    def get_ettoday_news(self,keyword):
-        url = 'https://www.ettoday.net/news_search/doSearch.php?search_term_string='+ keyword
+    async def get_ettoday_news(self,s,keyword):
+        url = 'https://www.ettoday.net/news_search/doSearch.php?search_term_string='+ urllib.parse.quote_plus(keyword)
         res = requests.get(url=url,headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         titles = soup.select('h2 > a')
@@ -148,8 +147,8 @@ class news:
             else:
                 break
         return results
-    def get_TVBS_news(self,keyword):
-        url = 'https://news.tvbs.com.tw/news/searchresult/'+ keyword +'/news'
+    async def get_TVBS_news(self,s,keyword):
+        url = 'https://news.tvbs.com.tw/news/searchresult/'+ urllib.parse.quote_plus(keyword) +'/news'
         res = requests.get(url=url,headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         titles = soup.select('h2.search_list_txt')
@@ -176,8 +175,8 @@ class news:
             else:
                 break
         return results
-    def get_china_news(self,keyword):
-        url = 'https://www.chinatimes.com/search/'+ keyword +'?chdtv'
+    async def get_china_news(self,s,keyword):
+        url = 'https://www.chinatimes.com/search/'+ urllib.parse.quote_plus(keyword) +'?chdtv'
         res = requests.get(url=url,headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         titles = soup.select('h3 > a')
@@ -192,7 +191,6 @@ class news:
             dateString = dates[i].get('datetime')
             dateFormatter = "%Y-%m-%d %H:%M"
             published_date = datetime.strptime(dateString, dateFormatter)
-            print(title,published_date,url)
             expect_time = datetime.today() - timedelta(hours=4)
             if published_date >= expect_time:
                 results.append({
@@ -204,8 +202,8 @@ class news:
             else:
                 break
         return results
-    def get_storm_news(self,keyword):
-        url = 'https://www.storm.mg/site-search/result?q='+ keyword +'&order=none&format=week'
+    async def get_storm_news(self,s,keyword):
+        url = 'https://www.storm.mg/site-search/result?q='+ urllib.parse.quote_plus(keyword) +'&order=none&format=week'
         res = requests.get(url=url,headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         titles = soup.select('p.card_title')
@@ -232,8 +230,8 @@ class news:
             else:
                 break
         return results
-    def get_ttv_news(self,keyword):
-        url = 'https://news.ttv.com.tw/search/' + keyword
+    async def get_ttv_news(self,s,keyword):
+        url = 'https://news.ttv.com.tw/search/' + urllib.parse.quote_plus(keyword)
         res = requests.get(url=url,headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         titles = soup.select('div.title')
@@ -260,8 +258,8 @@ class news:
             else:
                 break
         return results
-    def get_ftv_news(self,keyword):
-        url = 'https://www.ftvnews.com.tw/search/' + keyword
+    async def get_ftv_news(self,s,keyword):
+        url = 'https://www.ftvnews.com.tw/search/' + urllib.parse.quote_plus(keyword)
         res = requests.get(url=url,headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         titles = soup.select('div.title')
@@ -288,8 +286,8 @@ class news:
             else:
                 break
         return results
-    def get_cna_news(self,keyword):
-        url = 'https://www.cna.com.tw/search/hysearchws.aspx?q=' + keyword
+    async def get_cna_news(self,s,keyword):
+        url = 'https://www.cna.com.tw/search/hysearchws.aspx?q=' + urllib.parse.quote_plus(keyword)
         res = requests.get(url=url,headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         urls = soup.select('ul.mainList > li > a')
@@ -319,8 +317,8 @@ class news:
             else:
                 break
         return results
-    def get_ltn_news(self,keyword):
-        url = 'https://search.ltn.com.tw/list?keyword=' + keyword
+    async def get_ltn_news(self,s,keyword):
+        url = 'https://search.ltn.com.tw/list?keyword=' + urllib.parse.quote_plus(keyword)
         res = requests.get(url=url,headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         tit_tag = soup.find_all("a", class_="tit")
@@ -332,7 +330,7 @@ class news:
             url = tit_tag[i]['href']
             res = requests.get(url=url,headers=self.headers)
             soup = BeautifulSoup(res.text, 'html.parser')
-            publish = soup.select('span.time')[i].text.replace('\n    ','')
+            publish = soup.select('span.time')[0].text.replace('\n    ','')
             image = images[i].get('data-src')
             dateFormatter = "%Y/%m/%d %H:%M"
             published_date = datetime.strptime(publish, dateFormatter)
@@ -347,5 +345,25 @@ class news:
             else:
                 break
         return results
-if __name__ == '__main__':
-    print(news().get_ttv_news('基進'))
+async def main(keyword):
+    s = AsyncHTMLSession()
+    udn_task = news().get_udn_news(s,keyword)
+    apple_task = news().get_apple_news(s,keyword)
+    setn_task = news().get_setn_news(s,keyword)
+    ettoday_task = news().get_ettoday_news(s,keyword)
+    tvbs_task = news().get_TVBS_news(s,keyword)
+    china_task = news().get_china_news(s,keyword)
+    storm_task = news().get_storm_news(s,keyword)
+    ttv_task = news().get_ttv_news(s,keyword)
+    ftv_task = news().get_ftv_news(s,keyword)
+    ltn_task = news().get_ltn_news(s,keyword)
+    cna_task = news().get_cna_news(s,keyword)
+    return await asyncio.gather(udn_task,apple_task,setn_task,ettoday_task,tvbs_task,china_task,storm_task,ttv_task,ftv_task,ltn_task,cna_task)
+
+start = time.perf_counter()
+results = asyncio.run(main('基進'))
+print(results)
+#print(news().get_google_news('基進'))
+end = time.perf_counter() - start
+print(end)
+    
