@@ -60,7 +60,7 @@ class news:
             url = news[i]['titleLink']
             publisher = 'udn聯合新聞網'
             image = news[i]['url']
-            expect_time = datetime.today() - timedelta(hours=4)
+            expect_time = datetime.today() - timedelta(hours=1)
             if published_date >= expect_time:
                 results.append({
                     'title':title,
@@ -83,7 +83,7 @@ class news:
             url = news[i]['sharing']['url']
             publisher = news[i]['brandName']
             image = news[i]['sharing']['image']
-            expect_time = datetime.today() - timedelta(hours=4)
+            expect_time = datetime.today() - timedelta(hours=1)
             if published_date >= expect_time:
                 results.append({
                     'title':title,
@@ -111,7 +111,7 @@ class news:
             image = images[i].get('data-original').replace('-L','-PH')
             dateFormatter = "%Y/%m/%d %H:%M"
             published_date = datetime.strptime(dateString, dateFormatter)
-            expect_time = datetime.today() - timedelta(hours=4)
+            expect_time = datetime.today() - timedelta(hours=1)
             if published_date >= expect_time:
                 results.append({
                     'title':title,
@@ -138,7 +138,7 @@ class news:
             image = 'https:' + images[i].get('src').replace('/b','/d')
             dateFormatter = "%Y-%m-%d%H:%M)"
             published_date = datetime.strptime(publish, dateFormatter)
-            expect_time = datetime.today() - timedelta(hours=4)
+            expect_time = datetime.today() - timedelta(hours=1)
             if published_date >= expect_time:
                 results.append({
                     'title':title,
@@ -166,7 +166,7 @@ class news:
             image = images[i].get('data-original')
             dateFormatter = "%Y/%m/%d %H:%M"
             published_date = datetime.strptime(publish, dateFormatter)
-            expect_time = datetime.today() - timedelta(hours=4)
+            expect_time = datetime.today() - timedelta(hours=1)
             if published_date >= expect_time:
                 results.append({
                     'title':title,
@@ -193,7 +193,7 @@ class news:
             dateString = dates[i].get('datetime')
             dateFormatter = "%Y-%m-%d %H:%M"
             published_date = datetime.strptime(dateString, dateFormatter)
-            expect_time = datetime.today() - timedelta(hours=4)
+            expect_time = datetime.today() - timedelta(hours=1)
             if published_date >= expect_time:
                 results.append({
                     'title':title,
@@ -221,7 +221,7 @@ class news:
             publish_date = publish_dates[i].text
             dateFormatter = "%Y-%m-%d %H:%M"
             published_date = datetime.strptime(publish_date, dateFormatter)
-            expect_time = datetime.today() - timedelta(hours=4)
+            expect_time = datetime.today() - timedelta(hours=1)
             if published_date >= expect_time:
                 results.append({
                     'title':title,
@@ -249,7 +249,7 @@ class news:
             image = images[i].get('src')
             dateFormatter = "%Y/%m/%d %H:%M:%S"
             published_date = datetime.strptime(publish, dateFormatter)
-            expect_time = datetime.today() - timedelta(hours=4)
+            expect_time = datetime.today() - timedelta(hours=1)
             if published_date >= expect_time:
                 results.append({
                     'title':title,
@@ -277,7 +277,7 @@ class news:
             image = images[i].get('src')
             dateFormatter = "%Y/%m/%d %H:%M:%S"
             published_date = datetime.strptime(publish, dateFormatter)
-            expect_time = datetime.today() - timedelta(hours=4)
+            expect_time = datetime.today() - timedelta(hours=1)
             if published_date >= expect_time:
                 results.append({
                     'title':title,
@@ -308,7 +308,7 @@ class news:
                 image = None
             dateFormatter = "%Y/%m/%d %H:%M"
             published_date = datetime.strptime(publish, dateFormatter)
-            expect_time = datetime.today() - timedelta(hours=4)
+            expect_time = datetime.today() - timedelta(hours=1)
             if published_date >= expect_time:
                 results.append({
                     'title':title,
@@ -333,10 +333,12 @@ class news:
             res = requests.get(url=url,headers=self.headers)
             soup = BeautifulSoup(res.text, 'html.parser')
             publish = soup.select('span.time')[0].text.replace('\n    ','')
+            if publish == "":
+                publish = soup.select('span.time')[1].text.replace('\n    ','')
             image = images[i].get('data-src')
             dateFormatter = "%Y/%m/%d %H:%M"
             published_date = datetime.strptime(publish, dateFormatter)
-            expect_time = datetime.today() - timedelta(hours=4)
+            expect_time = datetime.today() - timedelta(hours=1)
             if published_date >= expect_time:
                 results.append({
                     'title':title,
@@ -347,20 +349,20 @@ class news:
             else:
                 break
         return results
-async def main(keyword):
+async def main(*keywords):
     s = AsyncHTMLSession()
-    udn_task = news().get_udn_news(s,keyword)
-    apple_task = news().get_apple_news(s,keyword)
-    setn_task = news().get_setn_news(s,keyword)
-    ettoday_task = news().get_ettoday_news(s,keyword)
-    tvbs_task = news().get_TVBS_news(s,keyword)
-    china_task = news().get_china_news(s,keyword)
-    storm_task = news().get_storm_news(s,keyword)
-    ttv_task = news().get_ttv_news(s,keyword)
-    ftv_task = news().get_ftv_news(s,keyword)
-    ltn_task = news().get_ltn_news(s,keyword)
-    cna_task = news().get_cna_news(s,keyword)
-    return await asyncio.gather(udn_task,apple_task,setn_task,ettoday_task,tvbs_task,china_task,storm_task,ttv_task,ftv_task,ltn_task,cna_task)
+    udn_task = (news().get_udn_news(s,keyword) for keyword in keywords)
+    apple_task = (news().get_apple_news(s,keyword) for keyword in keywords)
+    setn_task = (news().get_setn_news(s,keyword) for keyword in keywords)
+    ettoday_task = (news().get_ettoday_news(s,keyword) for keyword in keywords)
+    tvbs_task = (news().get_TVBS_news(s,keyword) for keyword in keywords)
+    china_task = (news().get_china_news(s,keyword) for keyword in keywords)
+    storm_task = (news().get_storm_news(s,keyword) for keyword in keywords)
+    ttv_task = (news().get_ttv_news(s,keyword) for keyword in keywords)
+    ftv_task = (news().get_ftv_news(s,keyword) for keyword in keywords)
+    ltn_task = (news().get_ltn_news(s,keyword) for keyword in keywords)
+    cna_task = (news().get_cna_news(s,keyword) for keyword in keywords)
+    return await asyncio.gather(*udn_task,*apple_task,*setn_task,*ettoday_task,*tvbs_task,*china_task,*storm_task,*ttv_task,*ftv_task,*ltn_task,*cna_task)
 
 start = time.perf_counter()
 results = asyncio.run(main('基進'))
@@ -368,4 +370,3 @@ print(results)
 #print(news().get_google_news('基進'))
 end = time.perf_counter() - start
 print(end)
-    
