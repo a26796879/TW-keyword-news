@@ -25,25 +25,27 @@ class news:
         google_news = GNews(language='zh-Hant', country='TW', period="4h")
         news = google_news.get_news(keyword)
         news_count = len(news)
-        # title,publisher,url,published date
         results = []
         for i in range(news_count):
-            article = Article(news[i]['url'])
-            article.download()
-            article.parse()
-            dateString = news[i]['published date']
-            dateFormatter = "%a, %d %b %Y %H:%M:%S GMT"
-            published_date = datetime.strptime(dateString, dateFormatter)
-            title = news[i]['title']
-            url = news[i]['url']
-            publisher = news[i]['publisher']['title']
-            if keyword in article.text:
-                results.append({
-                    'title':title,
-                    'url':url,
-                    'publisher':publisher,
-                    'published_date':published_date
-                })
+            try:
+                article = Article(news[i]['url'])
+                article.download()
+                article.parse()
+                dateString = news[i]['published date']
+                dateFormatter = "%a, %d %b %Y %H:%M:%S GMT"
+                published_date = datetime.strptime(dateString, dateFormatter)
+                title = news[i]['title']
+                url = news[i]['url']
+                publisher = news[i]['publisher']['title']
+                if keyword in article.text:
+                    results.append({
+                        'title':title,
+                        'url':url,
+                        'publisher':publisher,
+                        'published_date':published_date
+                    })
+            except:
+                continue
         return results
     async def get_udn_news(self,s,keyword):
         udn_url = 'https://udn.com/api/more?page=0&id=search:'+ urllib.parse.quote_plus(keyword) +'&channelId=2&type=searchword'
