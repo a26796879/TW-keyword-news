@@ -237,7 +237,7 @@ class news:
         results = []
         for i in range(len(urls)):
             url = 'https://news.ttv.com.tw/'+urls[i].get('href')
-            title = titles[i+3].text
+            title = titles[i+2].text
             publish = publishes[i].text
             image = images[i].get('src')
             dateFormatter = "%Y/%m/%d %H:%M:%S"
@@ -358,7 +358,7 @@ async def main(*keywords):
     return await asyncio.gather(*udn_task,*apple_task,*setn_task,*ettoday_task,*tvbs_task,*china_task,*storm_task,*ttv_task,*ftv_task,*ltn_task,*cna_task)
 
 start = time.perf_counter()
-results = asyncio.run(main('台灣'))
+results = asyncio.run(main('公投'))
 print(results)
 #print(news().get_google_news('基進'))
 end = time.perf_counter() - start
