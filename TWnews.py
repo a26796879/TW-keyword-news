@@ -355,11 +355,13 @@ async def main(*keywords):
     ftv_task = (news().get_ftv_news(s,keyword) for keyword in keywords)
     ltn_task = (news().get_ltn_news(s,keyword) for keyword in keywords)
     cna_task = (news().get_cna_news(s,keyword) for keyword in keywords)
-    return await asyncio.gather(*udn_task,*apple_task,*setn_task,*ettoday_task,*tvbs_task,*china_task,*storm_task,*ttv_task,*ftv_task,*ltn_task,*cna_task)
+    result = await asyncio.gather(*udn_task,*apple_task,*setn_task,*ettoday_task,*tvbs_task,*china_task,*storm_task,*ttv_task,*ftv_task,*ltn_task,*cna_task)
+    return result
 
-start = time.perf_counter()
-results = asyncio.run(main('公投'))
-print(results)
-#print(news().get_google_news('基進'))
-end = time.perf_counter() - start
-print(end)
+if __name__ == "__main__":
+    start = time.perf_counter()
+    results = asyncio.run(main('公投'))
+    print(results)
+    #print(news().get_google_news('基進'))
+    end = time.perf_counter() - start
+    print(end)
