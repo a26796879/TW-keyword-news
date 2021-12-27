@@ -146,7 +146,7 @@ async def read_own_items(current_user: User = Depends(get_current_active_user)):
 @app.get("/get_google_news")
 async def get_google_news(item:News):
     return news().get_google_news(item.keyword)
-@app.get("/main/{main_keyword}")
+@app.get("/news/{main_keyword}")
 async def read_item(main_keyword: str = None):
    return await TWnews.main(main_keyword)
 
