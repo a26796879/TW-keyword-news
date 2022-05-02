@@ -41,7 +41,8 @@ class news:
                 continue
         return results
     async def get_udn_news(self,s,keyword):
-        udn_url = 'https://udn.com/api/more?page=0&id=search:'+ urllib.parse.quote_plus(keyword) +'&channelId=2&type=searchword'
+        udn_url = 'https://udn.com/api/more?page=0&id=search:'+ \
+            urllib.parse.quote_plus(keyword) +'&channelId=2&type=searchword'
         res = requests.get(url=udn_url,headers=self.headers)
         news = res.json()['lists']
         results = []
