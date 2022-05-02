@@ -66,7 +66,9 @@ class news:
                 break
         return results
     async def get_apple_news(self,s,keyword):
-        apple_url = 'https://tw.appledaily.com/pf/api/v3/content/fetch/search-query?query=%7B%22searchTerm%22%3A%22'+ urllib.parse.quote_plus(keyword) +'%22%2C%22start%22%3A0%7D&_website=tw-appledaily'
+        apple_url = 'https://tw.appledaily.com/pf/api/v3/content/'+\
+            'fetch/search-query?query=%7B%22searchTerm%22%3A%22'+ \
+            urllib.parse.quote_plus(keyword) +'%22%2C%22start%22%3A0%7D&_website=tw-appledaily'
         res = requests.get(url=apple_url,headers=self.headers)
         news = res.json()['content']
         results = []
@@ -117,7 +119,8 @@ class news:
                 break
         return results
     async def get_ettoday_news(self,s,keyword):
-        url = 'https://www.ettoday.net/news_search/doSearch.php?search_term_string='+ urllib.parse.quote_plus(keyword)
+        url = 'https://www.ettoday.net/news_search/doSearch.php?search_term_string='+ \
+            urllib.parse.quote_plus(keyword)
         res = requests.get(url=url,headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         titles = soup.select('h2 > a')
@@ -144,7 +147,8 @@ class news:
                 break
         return results
     async def get_TVBS_news(self,s,keyword):
-        url = 'https://news.tvbs.com.tw/news/searchresult/'+ urllib.parse.quote_plus(keyword) +'/news'
+        url = 'https://news.tvbs.com.tw/news/searchresult/'+ \
+            urllib.parse.quote_plus(keyword) +'/news'
         res = requests.get(url=url,headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         titles = soup.select('h2.search_list_txt')
@@ -172,7 +176,8 @@ class news:
                 break
         return results
     async def get_china_news(self,s,keyword):
-        url = 'https://www.chinatimes.com/search/'+ urllib.parse.quote_plus(keyword) +'?chdtv'
+        url = 'https://www.chinatimes.com/search/'+ \
+            urllib.parse.quote_plus(keyword) +'?chdtv'
         res = requests.get(url=url,headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         titles = soup.select('h3 > a')
@@ -199,7 +204,8 @@ class news:
                 break
         return results
     async def get_storm_news(self,s,keyword):
-        url = 'https://www.storm.mg/site-search/result?q='+ urllib.parse.quote_plus(keyword) +'&order=none&format=week'
+        url = 'https://www.storm.mg/site-search/result?q='+ \
+            urllib.parse.quote_plus(keyword) +'&order=none&format=week'
         res = requests.get(url=url,headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         titles = soup.select('p.card_title')
@@ -283,7 +289,8 @@ class news:
                 break
         return results
     async def get_cna_news(self,s,keyword):
-        url = 'https://www.cna.com.tw/search/hysearchws.aspx?q=' + urllib.parse.quote_plus(keyword)
+        url = 'https://www.cna.com.tw/search/hysearchws.aspx?q=' + \
+            urllib.parse.quote_plus(keyword)
         res = requests.get(url=url,headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         urls = soup.select('ul.mainList > li > a')
@@ -359,7 +366,8 @@ async def main(*keywords):
     ftv_task = (news().get_ftv_news(s,keyword) for keyword in keywords)
     ltn_task = (news().get_ltn_news(s,keyword) for keyword in keywords)
     cna_task = (news().get_cna_news(s,keyword) for keyword in keywords)
-    result = await asyncio.gather(*udn_task,*apple_task,*setn_task,*ettoday_task,*tvbs_task,*china_task,*storm_task,*ttv_task,*ftv_task,*ltn_task,*cna_task)
+    result = await asyncio.gather(*udn_task,*apple_task,*setn_task,*ettoday_task,\
+        *tvbs_task,*china_task,*storm_task,*ttv_task,*ftv_task,*ltn_task,*cna_task)
     return result
 
 if __name__ == "__main__":
