@@ -229,15 +229,15 @@ class news:
         url = 'https://news.ttv.com.tw/search/' + urllib.parse.quote_plus(keyword)
         res = requests.get(url=url,headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
-        titles = soup.select('div.title')
+        titles = soup.select('ul > li > a.clearfix > div.content > div.title')
         urls = soup.select('ul > li > a.clearfix')
-        publishes = soup.select('div.time')
+        publishes = soup.select('ul > li > a.clearfix > div.content > div.time')
         images = soup.select('img[alt=""]')
         publisher = '台視新聞網'
         results = []
         for i in range(len(urls)):
             url = 'https://news.ttv.com.tw/'+urls[i].get('href')
-            title = titles[i+2].text
+            title = titles[i].text.replace('\u3000',' ') #將全形space取代為半形space
             publish = publishes[i].text
             image = images[i].get('src')
             dateFormatter = "%Y/%m/%d %H:%M:%S"
@@ -325,9 +325,12 @@ class news:
             url = tit_tag[i]['href']
             res = requests.get(url=url,headers=self.headers)
             soup = BeautifulSoup(res.text, 'html.parser')
-            publish = soup.select('span.time')[0].text.replace('\n    ','')
-            if publish == "":
-                publish = soup.select('span.time')[1].text.replace('\n    ','')
+            if 'health.ltn' in url:
+                publish = soup.select('span.time')[1].text.replace('\n    ','').replace('\r','')
+            elif 'ent.ltn' in url:
+                publish = soup.select('time.time')[0].text.replace('\n    ','').replace('\r','')
+            else:
+                publish = soup.select('span.time')[0].text.replace('\n    ','').replace('\r','')
             image = images[i].get('data-src')
             dateFormatter = "%Y/%m/%d %H:%M"
             published_date = datetime.strptime(publish, dateFormatter)
