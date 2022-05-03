@@ -337,6 +337,8 @@ class news:
                 publish = soup.select('span.time')[1].text.replace('\n    ','').replace('\r','')
             elif 'ent.ltn' in url:
                 publish = soup.select('time.time')[0].text.replace('\n    ','').replace('\r','')
+            elif 'istyle' in url:
+                publish = soup.select('span.time')[0].text.split('\n')[0].replace('\n    ','').replace('\r','').replace('  ','')
             else:
                 publish = soup.select('span.time')[0].text.replace('\n    ','').replace('\r','')
             image = images[i].get('data-src')
