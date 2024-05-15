@@ -18,6 +18,11 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pylint
+        pip install newspaper3k
+        pip install gnews
+        pip install beautifulsoup4
+        pip install requests_html
+        pip install fake_useragent
     - name: Analysing the code with pylint
       run: |
         pylint $(git ls-files '*.py')
