@@ -355,7 +355,7 @@ class NewsCrawler:
             expect_time = datetime.today() - timedelta(hours=8)
             if published_date >= expect_time:
                 results.append({
-                    'title': tit_tag[0].get('title'),
+                    'title': value.text,
                     'url': each_url,
                     'publisher': '自由時報電子報',
                     'published_date': published_date
