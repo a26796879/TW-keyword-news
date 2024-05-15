@@ -1,2 +1,5 @@
 __pycache__
 .vscode
+app.py
+hash.py
+try.py
