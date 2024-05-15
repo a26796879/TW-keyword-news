@@ -56,7 +56,7 @@ class NewsCrawler:
         results = []
         for value in enumerate(news):
             date_string = news[value[0]]['time']['date']
-            date_format = "%Y-%m-%d %H:%M:%S"
+            date_format = "%Y-%m-%d %H:%M"
             published_date = datetime.strptime(date_string, date_format)
             title = news[value[0]]['title']
             url = news[value[0]]['titleLink']
@@ -333,17 +333,16 @@ class NewsCrawler:
         res = await async_session.get(url=url, headers=self.headers)
         soup = BeautifulSoup(res.text, 'html.parser')
         tit_tag = soup.find_all("a", class_="tit")
-        #images = soup.select('img.lazy_imgs')
         results = []
         for value in tit_tag:
             each_url = value.get('href')
             res = await async_session.get(url=each_url, headers=self.headers)
             soup = BeautifulSoup(res.text, 'html.parser')
-            if 'health.ltn' in each_url or 'sports.ltn' in each_url:
+            if 'health.ltn' in each_url or 'sports.ltn' in each_url or 'ec.ltn' in each_url:
                 publish = soup.select('span.time')[1].text.replace(
                     '\n    ', '').replace('\r', '')
             elif 'ent.ltn' in each_url:
-                publish = soup.select('time.time')[0].text.replace(
+                publish = soup.select('time.time')[1].text.replace(
                     '\n    ', '').replace('\r', '')
             elif 'istyle' in each_url:
                 publish = soup.select('span.time')[0].text.split('\n')[0].replace(
@@ -351,7 +350,6 @@ class NewsCrawler:
             else:
                 publish = soup.select('span.time')[0].text.replace(
                     '\n    ', '').replace('\r', '')
-            # image = images[i].get('data-src')
             date_format = "%Y/%m/%d %H:%M"
             published_date = datetime.strptime(publish, date_format)
             expect_time = datetime.today() - timedelta(hours=8)
@@ -368,6 +366,7 @@ class NewsCrawler:
 
 
 async def main(*keywords):
+    ''' using async_session to run all functions'''
     async_session = AsyncHTMLSession()
     udn_task = (NewsCrawler().get_udn_news(async_session, keyword)
                 for keyword in keywords)
@@ -399,6 +398,5 @@ if __name__ == "__main__":
     start = time.perf_counter()
     result = asyncio.run(main('日本'))
     print(result)
-    # print(NewsCrawler().get_google_news('基進'))
     end = time.perf_counter() - start
     print(end)
