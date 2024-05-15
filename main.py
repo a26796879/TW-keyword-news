@@ -1,3 +1,4 @@
+''' to get taiwan news by keyword '''
 # !/usr/bin/python
 # -*- coding: utf-8 -*-
 import asyncio
@@ -14,6 +15,7 @@ ua = UserAgent()
 
 
 class NewsCrawler:
+    ''' an Object of news crawler '''
     def __init__(self):
         self.unit = 'hours'
         self.headers = {
