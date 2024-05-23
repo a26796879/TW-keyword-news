@@ -84,17 +84,15 @@ class NewsCrawler:
         soup = BeautifulSoup(str(main_content), 'html.parser')
         publish = soup.find_all("div", class_='post-inner')
         results = []
-        for i, each_news in enumerate(publish):
-            title = each_news.a.text.replace('\u3000', ' '),  # 將全形space取代為半形space
-            news_url = each_news.a.get('href')
+        for _, each_news in enumerate(publish):
             date_string = each_news.time.text
             date_format = "%Y/%m/%d %H:%M"
             published_date = datetime.strptime(date_string, date_format)
             expect_time = datetime.today() - timedelta(hours=8)
             if published_date >= expect_time:
                 results.append({
-                    'title': title,
-                    'url': news_url,
+                    'title': each_news.a.text.replace('\u3000', ' '),  # 將全形space取代為半形space,
+                    'url': each_news.a.get('href'),
                     'publisher': '臺蘋新聞網',
                     'published_date': published_date
                 })
